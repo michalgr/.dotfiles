@@ -5,6 +5,9 @@ elif [[ -f "/usr/local/bin/brew" ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
+# Path configuration
+export PATH="$HOME/.local/bin:$PATH"
+
 # Shell Aliases
 alias lg="lazygit"
 alias cat="bat"
