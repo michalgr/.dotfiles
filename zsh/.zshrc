@@ -11,6 +11,27 @@ alias cat="bat"
 alias ls="eza --icons --git"
 alias top="btm"
 alias tmux="tmux -u"
+alias tl="tmux ls"
+alias ts="ta"
+
+# Attach to an existing tmux session by name or create a new one if it doesn't exist
+ta() {
+  if [[ -z "$1" ]]; then
+    if [[ -n "$TMUX" ]]; then
+      tmux switch-client -l 2>/dev/null || tmux list-sessions
+    else
+      tmux attach-session 2>/dev/null || tmux new-session
+    fi
+  elif [[ -n "$TMUX" ]]; then
+    local session="$1"
+    tmux has-session -t "$session" 2>/dev/null || tmux new-session -d -s "$session"
+    tmux switch-client -t "$session"
+  else
+    local session="$1"
+    shift
+    tmux new-session -A -s "$session" "$@"
+  fi
+}
 
 # Tool Integrations
 if command -v starship &>/dev/null; then
