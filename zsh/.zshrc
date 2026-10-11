@@ -49,11 +49,28 @@ if command -v fzf &>/dev/null; then
   source <(fzf --zsh)
 fi
 
-# Agent Jail Helper (runs the isolated container sandbox)
-agent-jail() {
-  local container_cmd="docker"
-  if command -v podman &>/dev/null; then
-    container_cmd="podman"
+# Persistent Agent Jail (attaches to long-running container with tmux)
+jail() {
+  if ! podman container inspect agent-jail &>/dev/null; then
+    echo "Creating persistent agent-jail container..."
+    podman run -d \
+      --name agent-jail \
+      --restart unless-stopped \
+      -v "$HOME/projects:/home/michalgr/workspace" \
+      agent-jail sleep infinity
+  else
+    podman start agent-jail &>/dev/null
   fi
-  "$container_cmd" run -it --rm -v "$(pwd):/home/michalgr/workspace" agent-jail "$@"
+
+  if [[ $# -gt 0 ]]; then
+    podman exec -it agent-jail zsh -l -c "$*"
+  else
+    podman exec -it agent-jail zsh -l -c "ta"
+  fi
 }
+
+# One-off throwaway container (destroyed on exit)
+jail-ephemeral() {
+  podman run -it --rm -v "$(pwd):/home/michalgr/workspace" agent-jail "$@"
+}
+
