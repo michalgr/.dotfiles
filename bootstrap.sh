@@ -20,9 +20,12 @@ mkdir -p "$HOME/.config"
 if [ -d "$HOME/.config/helix" ] && [ -z "$(ls -A "$HOME/.config/helix" 2>/dev/null)" ]; then
   rmdir "$HOME/.config/helix"
 fi
+if [ -d "$HOME/.config/ghostty" ] && [ -z "$(ls -A "$HOME/.config/ghostty" 2>/dev/null)" ]; then
+  rmdir "$HOME/.config/ghostty"
+fi
 
 # 4. Stow dotfiles packages
-PACKAGES=(git helix starship tmux zsh)
+PACKAGES=(ghostty git helix starship tmux zsh)
 
 echo "==> Stowing packages: ${PACKAGES[*]}"
 for pkg in "${PACKAGES[@]}"; do
